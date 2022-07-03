@@ -1,5 +1,7 @@
 # peekaboo
 
+[docs](https://docs.rs/peekaboo/latest/peekaboo/) - [crates.io](https://crates.io/crates/peekaboo)
+
 Peekable iterator that allows to peek the next `N` elements without consuming them.
 
 ## Examples
@@ -19,3 +21,11 @@ assert_eq!(iter.peek::<3>(), Some(&&3));
 assert_eq!(iter.next(), Some(&1));
 assert_eq!(iter.next(), Some(&2));
 ```
+
+## Use
+
+Run `cargo add peekaboo` (if using a Rust version over 1.62), or manually add
+```toml
+peekaboo = "0.1.0"
+```
+to your `Cargo.toml`
