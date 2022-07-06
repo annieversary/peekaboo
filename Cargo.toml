@@ -1,6 +1,6 @@
 [package]
 name = "peekaboo"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["annieversary <annie@versary.town>"]
 description = "Peekable iterator that allows to peek the next `N` elements without consuming them."
@@ -8,7 +8,5 @@ license = "MIT OR Apache-2.0"
 keywords = ["peekable", "peek", "iterator"]
 repository = "https://github.com/annieversary/peekaboo"
 readme = "README.md"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

@@ -28,6 +28,6 @@ assert_eq!(iter.next(), Some(&2));
 
 Run `cargo add peekaboo` (if using a Rust version over 1.62), or manually add
 ```toml
-peekaboo = "0.1.0"
+peekaboo = "0.2.0"
 ```
 to your `Cargo.toml`
