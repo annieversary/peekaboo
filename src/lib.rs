@@ -19,12 +19,9 @@
 //! assert_eq!(iter.next(), Some(&2));
 //! ```
 
-use std::iter::FusedIterator;
+#![no_std]
 
-#[cfg(test)]
-mod std_tests;
-#[cfg(test)]
-mod tests;
+use core::iter::FusedIterator;
 
 /// An iterator that allows to peek the next `N` elements without consuming them.
 ///

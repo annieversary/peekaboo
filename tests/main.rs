@@ -1,4 +1,4 @@
-use super::*;
+use peekaboo::*;
 
 #[test]
 fn it_works() {

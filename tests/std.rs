@@ -1,6 +1,6 @@
 //! translation of the stdlib tests for `std::iter::Peekable`
 
-use super::*;
+use peekaboo::*;
 use std::iter::empty;
 
 #[test]

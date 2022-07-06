@@ -4,6 +4,8 @@
 
 Peekable iterator that allows to peek the next `N` elements without consuming them.
 
+It's `no_std` compatible by default. It also doesn't perform any allocations.
+
 ## Examples
 
 Basic usage:
