@@ -1,11 +1,13 @@
 //! Peekable iterator that allows to peek the next `N` elements without consuming them.
 //!
+//! It's `no_std` compatible by default. It also doesn't perform any allocations.
+//!
 //! # Examples
 //!
 //! Basic usage:
 //!
 //! ```
-//! # use peekaboo::IteratorExt;
+//! use peekaboo::*;
 //! let xs = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 //! // create an iterator that allows us to peek at the next 4 element
 //! let mut iter = xs.iter().peekable_n::<4>();
@@ -94,7 +96,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
         assert_ne!(IDX, 0);
         assert!(
             IDX <= N,
-            "trying to peek out of bounds. please use Peekable<I, {}>",
+            "trying to peek out of bounds. please use Peekable<I, {}> instead",
             IDX + 1
         );
 
@@ -132,7 +134,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
         assert_ne!(IDX, 0);
         assert!(
             IDX <= N,
-            "trying to peek out of bounds. please use Peekable<I, {}>",
+            "trying to peek out of bounds. please use Peekable<I, {}> instead",
             IDX + 1
         );
 
@@ -353,7 +355,12 @@ where
     }
 }
 
-impl<I: ExactSizeIterator, const N: usize> ExactSizeIterator for Peekable<I, N> {}
+impl<I: ExactSizeIterator, const N: usize> ExactSizeIterator for Peekable<I, N> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.iter.len()
+    }
+}
 
 impl<I: FusedIterator, const N: usize> FusedIterator for Peekable<I, N> {}
 
