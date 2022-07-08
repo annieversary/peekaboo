@@ -103,7 +103,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     ///
     /// Note that `peek::<1>()` is equivalent to [`core::iter::Peekable::peek`].
     /// This is to maintain consistency with commonly defined `peek2`, `peek3` methods.
-    /// Therefore, `peek::<0>()` is not allowed, and will cause a panic.
+    /// Therefore, `peek::<0>()` is not allowed, and will fail to compile.
     ///
     /// Because `peek()` returns a reference, and many iterators iterate over
     /// references, there can be a possibly confusing situation where the
@@ -133,7 +133,36 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
         // trying to peek out of bounds. please use Peekable<I, IDX + 1> instead
         let _ = Assert::<IDX, N>::LESS_EQ;
 
-        let idx = IDX - 1;
+        self.peek_unchecked(IDX)
+    }
+
+    /// Returns a reference to the nth next() value without advancing the iterator.
+    ///
+    /// Like [`next`], if there is a value, it is wrapped in a `Some(T)`.
+    /// But if the iteration is over, `None` is returned.
+    ///
+    /// Note that `peek_unchecked(1)` is equivalent to [`core::iter::Peekable::peek`].
+    /// This is to maintain consistency with commonly defined `peek2`, `peek3` methods.
+    /// Therefore, `peek_unchecked(0)` is not allowed, and will cause a panic.
+    ///
+    /// The `unchecked` in the name refers to compile time assertions. This function will still panic if
+    /// `idx` is out bounds.
+    ///
+    /// # Panics
+    ///
+    /// It will panic if `idx` is 0 or if `idx > N`.
+    ///
+    /// [`next`]: Iterator::next
+    /// [`core::iter::Peekable::peek`]: core::iter::Peekable::peek
+    pub fn peek_unchecked(&mut self, idx: usize) -> Option<&<I as Iterator>::Item> {
+        assert_ne!(idx, 0);
+        assert!(
+            idx <= N,
+            "trying to peek out of bounds. please use Peekable<I, {}> instead",
+            idx + 1
+        );
+
+        let idx = idx - 1;
 
         let iter = &mut self.iter;
         for i in 0..idx {
@@ -151,7 +180,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     ///
     /// Note that `peek_mut::<1>()` is equivalent to [`core::iter::Peekable::peek_mut`].
     /// This is to maintain consistency with commonly defined `peek2_mut`, `peek3_mut` methods.
-    /// Therefore, `peek::<0>()` is not allowed, and will cause a panic.
+    /// Therefore, `peek::<0>()` is not allowed, and will fail to compile.
     ///
     /// Because `peek_mut()` returns a reference, and many iterators iterate over
     /// references, there can be a possibly confusing situation where the
@@ -181,7 +210,33 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
         // trying to peek out of bounds. please use Peekable<I, IDX + 1> instead
         let _ = Assert::<IDX, N>::LESS_EQ;
 
-        let idx = IDX - 1;
+        self.peek_unchecked_mut(IDX)
+    }
+
+    /// Returns a mutable reference to the nth next() value without advancing the iterator.
+    ///
+    /// Note that `peek_unchecked_mut(1)` is equivalent to [`core::iter::Peekable::peek_mut`].
+    /// This is to maintain consistency with commonly defined `peek2`, `peek3` methods.
+    /// Therefore, `peek_unchecked_mut(0)` is not allowed, and will cause a panic.
+    ///
+    /// The `unchecked` in the name refers to compile time assertions. This function will still panic if
+    /// `idx` is out bounds.
+    ///
+    /// # Panics
+    ///
+    /// It will panic if `idx` is 0 or if `idx > N`.
+    ///
+    /// [`next`]: Iterator::next
+    /// [`core::iter::Peekable::peek_mut`]: core::iter::Peekable::peek_mut
+    pub fn peek_unchecked_mut(&mut self, idx: usize) -> Option<&mut <I as Iterator>::Item> {
+        assert_ne!(idx, 0);
+        assert!(
+            idx <= N,
+            "trying to peek out of bounds. please use Peekable<I, {}> instead",
+            idx + 1
+        );
+
+        let idx = idx - 1;
 
         let iter = &mut self.iter;
         for i in 0..idx {

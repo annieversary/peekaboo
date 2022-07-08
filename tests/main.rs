@@ -35,6 +35,44 @@ fn it_works() {
     assert_eq!(iter.peek::<1>(), None);
     assert_eq!(iter.next(), None);
 }
+#[test]
+fn unchecked_works() {
+    // since `peek` internally calls `peek_unchecked`, this test does exactly the same as `it_works`,
+    // but i wanted to have a separate one just in case
+
+    let xs = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let mut iter = xs.iter().peekable_n::<4>();
+
+    assert_eq!(iter.peek_unchecked(1), Some(&&1));
+    assert_eq!(iter.peek_unchecked(3), Some(&&3));
+
+    assert_eq!(iter.next(), Some(&1));
+    assert_eq!(iter.next(), Some(&2));
+
+    // The iterator does not advance even if we `peek` multiple times and far ahead
+    assert_eq!(iter.peek_unchecked(1), Some(&&3));
+    assert_eq!(iter.peek_unchecked(3), Some(&&5));
+
+    assert_eq!(iter.next(), Some(&3));
+
+    assert_eq!(iter.peek_unchecked(4), Some(&&7));
+    assert_eq!(iter.peek_unchecked(2), Some(&&5));
+
+    assert_eq!(iter.next(), Some(&4));
+    assert_eq!(iter.next(), Some(&5));
+    assert_eq!(iter.next(), Some(&6));
+
+    // the array has no more elements, so peek returns `None`
+    assert_eq!(iter.peek_unchecked(4), None);
+
+    assert_eq!(iter.next(), Some(&7));
+    assert_eq!(iter.next(), Some(&8));
+    assert_eq!(iter.next(), Some(&9));
+
+    // After the iterator is finished, so is `peek()`
+    assert_eq!(iter.peek_unchecked(1), None);
+    assert_eq!(iter.next(), None);
+}
 
 #[test]
 fn peek_multiple() {
