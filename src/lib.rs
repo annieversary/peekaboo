@@ -149,6 +149,51 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
         self.peeked[idx].get_or_insert_with(|| iter.next()).as_mut()
     }
 
+    /// Returns an array with references to the nth next() values without advancing the iterator.
+    ///
+    /// This method exists because `peek` takes `&mut self`, so the following does not work:
+    ///
+    /// ```compile_fail
+    /// # use peekaboo::*;
+    /// let mut iter = std::iter::empty::<u32>().peekable_n::<4>();
+    /// let peek1 = iter.peek::<1>();
+    /// let peek2 = iter.peek::<2>();
+    /// # assert_eq!(peek1, peek2);
+    /// ```
+    ///
+    /// Instead, use:
+    ///
+    /// ```
+    /// # use peekaboo::*;
+    /// let mut iter = std::iter::empty::<()>().peekable_n::<4>();
+    /// let [peek1, peek2] = iter.peek_multiple::<2>();
+    /// # assert_eq!(peek1, peek2);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if `IDX` is 0 or if `IDX > N`.
+    pub fn peek_multiple<const IDX: usize>(&mut self) -> [Option<&<I as Iterator>::Item>; IDX] {
+        assert_ne!(IDX, 0);
+        assert!(
+            IDX <= N,
+            "trying to peek out of bounds. please use Peekable<I, {}> instead",
+            IDX + 1
+        );
+        let mut res = [(); IDX].map(|_| None);
+        // fill peeked with the values
+        let _ = self.peek::<IDX>();
+
+        for i in 0..IDX {
+            res[i] = self.peeked[i]
+                .as_ref()
+                .expect("peeked to be filled with Some up to IDX")
+                .as_ref();
+        }
+
+        res
+    }
+
     /// Consume and return the next value of this iterator if a condition is true.
     ///
     /// If `func` returns `true` for the next value of this iterator, consume and return it.
@@ -355,13 +400,7 @@ where
     }
 }
 
-impl<I: ExactSizeIterator, const N: usize> ExactSizeIterator for Peekable<I, N> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.iter.len()
-    }
-}
-
+impl<I: ExactSizeIterator, const N: usize> ExactSizeIterator for Peekable<I, N> {}
 impl<I: FusedIterator, const N: usize> FusedIterator for Peekable<I, N> {}
 
 /// Trait extension that provides [`peekable_n`] for [`Iterator`]s

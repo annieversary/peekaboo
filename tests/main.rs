@@ -37,6 +37,20 @@ fn it_works() {
 }
 
 #[test]
+fn peek_multiple() {
+    let xs = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let mut iter = xs.iter().peekable_n::<4>();
+
+    assert_eq!(iter.peek_multiple::<3>(), [Some(&&1), Some(&&2), Some(&&3)]);
+    assert_eq!(iter.next(), Some(&1));
+    assert_eq!(iter.peek_multiple::<1>(), [Some(&&2)]);
+    assert_eq!(
+        iter.peek_multiple::<4>(),
+        [Some(&&2), Some(&&3), Some(&&4), Some(&&5)]
+    );
+}
+
+#[test]
 fn next_if() {
     let mut iter = (0..5).peekable_n::<3>();
     // The first item of the iterator is 0; consume it.
