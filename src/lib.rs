@@ -54,18 +54,41 @@ pub struct Peekable<I: Iterator, const N: usize> {
     peeked: [Option<Option<I::Item>>; N],
 }
 
+struct Assert<const L: usize, const R: usize>;
+#[allow(dead_code)]
+impl<const L: usize, const R: usize> Assert<L, R> {
+    pub const GREATER_EQ: usize = L - R;
+    pub const LESS_EQ: usize = R - L;
+    pub const NOT_EQ: isize = 0 / (R as isize - L as isize);
+    pub const EQ: usize = (R - L) + (L - R);
+    pub const GREATER: usize = L - R - 1;
+    pub const LESS: usize = R - L - 1;
+}
+
 impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// Creates an iterator that allows to peek the next `N` elements.
     ///
     /// See the documentation for [`Peekable`] for more information.
     ///
-    /// # Panics
+    /// # Fails to compile
     ///
-    /// Panics if `N` is 0.
+    /// It will fail to compile if `N` is 0.
+    ///
+    /// ```compile_fail
+    /// # use peekaboo::*;
+    /// let mut iter = core::iter::empty::<u32>().peekable_n::<0>();
+    /// ```
+    ///
+    /// You will see an error similar to:
+    ///
+    /// ```text
+    /// evaluation of `peekaboo::Assert::<0_usize, 0_usize>::NOT_EQ` failed
+    /// attempt to divide `0_isize` by zero
+    /// ```
     ///
     /// [`Peekable`]: struct.Peekable.html
     pub fn new(iter: I) -> Self {
-        assert_ne!(N, 0);
+        let _ = Assert::<N, 0>::NOT_EQ;
 
         Self {
             iter,
@@ -86,19 +109,29 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// references, there can be a possibly confusing situation where the
     /// return value is a double reference.
     ///
-    /// # Panics
+    /// # Fails to compile
     ///
-    /// Panics if `IDX` is 0 or if `IDX > N`.
+    /// It will fail to compile if `IDX` is 0 or if `IDX > N`.
+    ///
+    /// ```compile_fail
+    /// # use peekaboo::*;
+    /// let mut iter = core::iter::empty::<u32>().peekable_n::<4>();
+    /// let _ = iter.peek::<5>();
+    /// ```
+    ///
+    /// You will see an error similar to:
+    ///
+    /// ```text
+    /// error[E0080]: evaluation of `peekaboo::Assert::<5_usize, 4_usize>::LESS_EQ` failed
+    /// attempt to compute `4_usize - 5_usize`, which would overflow
+    /// ```
     ///
     /// [`next`]: Iterator::next
     /// [`core::iter::Peekable::peek`]: core::iter::Peekable::peek
     pub fn peek<const IDX: usize>(&mut self) -> Option<&<I as Iterator>::Item> {
-        assert_ne!(IDX, 0);
-        assert!(
-            IDX <= N,
-            "trying to peek out of bounds. please use Peekable<I, {}> instead",
-            IDX + 1
-        );
+        let _ = Assert::<IDX, 0>::NOT_EQ;
+        // trying to peek out of bounds. please use Peekable<I, IDX + 1> instead
+        let _ = Assert::<IDX, N>::LESS_EQ;
 
         let idx = IDX - 1;
 
@@ -124,19 +157,29 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// references, there can be a possibly confusing situation where the
     /// return value is a double reference.
     ///
-    /// # Panics
+    /// # Fails to compile
     ///
-    /// Panics if `IDX` is 0 or if `IDX > N`.
+    /// It will fail to compile if `IDX` is 0 or if `IDX > N`.
+    ///
+    /// ```compile_fail
+    /// # use peekaboo::*;
+    /// let mut iter = core::iter::empty::<u32>().peekable_n::<4>();
+    /// let _ = iter.peek_mut::<5>();
+    /// ```
+    ///
+    /// You will see an error similar to:
+    ///
+    /// ```text
+    /// error[E0080]: evaluation of `peekaboo::Assert::<5_usize, 4_usize>::LESS_EQ` failed
+    /// attempt to compute `4_usize - 5_usize`, which would overflow
+    /// ```
     ///
     /// [`next`]: Iterator::next
     /// [`core::iter::Peekable::peek_mut`]: core::iter::Peekable::peek_mut
     pub fn peek_mut<const IDX: usize>(&mut self) -> Option<&mut <I as Iterator>::Item> {
-        assert_ne!(IDX, 0);
-        assert!(
-            IDX <= N,
-            "trying to peek out of bounds. please use Peekable<I, {}> instead",
-            IDX + 1
-        );
+        let _ = Assert::<IDX, 0>::NOT_EQ;
+        // trying to peek out of bounds. please use Peekable<I, IDX + 1> instead
+        let _ = Assert::<IDX, N>::LESS_EQ;
 
         let idx = IDX - 1;
 
@@ -170,16 +213,27 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// # assert_eq!(peek1, peek2);
     /// ```
     ///
-    /// # Panics
+    /// # Fails to compile
     ///
-    /// Panics if `IDX` is 0 or if `IDX > N`.
+    /// It will fail to compile if `IDX` is 0 or if `IDX > N`.
+    ///
+    /// ```compile_fail
+    /// # use peekaboo::*;
+    /// let mut iter = core::iter::empty::<u32>().peekable_n::<4>();
+    /// let _ = iter.peek_multiple::<5>();
+    /// ```
+    ///
+    /// You will see an error similar to:
+    ///
+    /// ```text
+    /// error[E0080]: evaluation of `peekaboo::Assert::<5_usize, 4_usize>::LESS_EQ` failed
+    /// attempt to compute `4_usize - 5_usize`, which would overflow
+    /// ```
     pub fn peek_multiple<const IDX: usize>(&mut self) -> [Option<&<I as Iterator>::Item>; IDX] {
-        assert_ne!(IDX, 0);
-        assert!(
-            IDX <= N,
-            "trying to peek out of bounds. please use Peekable<I, {}> instead",
-            IDX + 1
-        );
+        let _ = Assert::<IDX, 0>::NOT_EQ;
+        // trying to peek out of bounds. please use Peekable<I, IDX + 1> instead
+        let _ = Assert::<IDX, N>::LESS_EQ;
+
         let mut res = [(); IDX].map(|_| None);
         // fill peeked with the values
         let _ = self.peek::<IDX>();
