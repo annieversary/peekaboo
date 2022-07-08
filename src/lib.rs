@@ -33,7 +33,7 @@ use core::iter::FusedIterator;
 /// side effects (i.e. anything other than fetching the next value) of
 /// the [`next`] method will occur.
 ///
-/// It is similar to [`std::iter::Peekable`], but it allows to peek further into the iterator.
+/// It is similar to [`core::iter::Peekable`], but it allows to peek further into the iterator.
 ///
 /// `N` has to be greater than 0, but there is no upper bound.
 ///
@@ -42,7 +42,7 @@ use core::iter::FusedIterator;
 ///
 /// [`peek`]: Peekable::peek
 /// [`peek_mut`]: Peekable::peek_mut
-/// [`std::iter::Peekable`]: std::iter::Peekable
+/// [`core::iter::Peekable`]: core::iter::Peekable
 /// [`peekable_n`]: IteratorExt::peekable_n
 /// [`IteratorExt`]: trait.IteratorExt.html
 /// [`next`]: Iterator::next
@@ -78,7 +78,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// Like [`next`], if there is a value, it is wrapped in a `Some(T)`.
     /// But if the iteration is over, `None` is returned.
     ///
-    /// Note that `peek::<1>()` is equivalent to [`std::iter::Peekable::peek`].
+    /// Note that `peek::<1>()` is equivalent to [`core::iter::Peekable::peek`].
     /// This is to maintain consistency with commonly defined `peek2`, `peek3` methods.
     /// Therefore, `peek::<0>()` is not allowed, and will cause a panic.
     ///
@@ -91,7 +91,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// Panics if `IDX` is 0 or if `IDX > N`.
     ///
     /// [`next`]: Iterator::next
-    /// [`std::iter::Peekable::peek`]: std::iter::Peekable::peek
+    /// [`core::iter::Peekable::peek`]: core::iter::Peekable::peek
     pub fn peek<const IDX: usize>(&mut self) -> Option<&<I as Iterator>::Item> {
         assert_ne!(IDX, 0);
         assert!(
@@ -116,7 +116,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// Like [`next`], if there is a value, it is wrapped in a `Some(T)`.
     /// But if the iteration is over, `None` is returned.
     ///
-    /// Note that `peek_mut::<1>()` is equivalent to [`std::iter::Peekable::peek_mut`].
+    /// Note that `peek_mut::<1>()` is equivalent to [`core::iter::Peekable::peek_mut`].
     /// This is to maintain consistency with commonly defined `peek2_mut`, `peek3_mut` methods.
     /// Therefore, `peek::<0>()` is not allowed, and will cause a panic.
     ///
@@ -129,7 +129,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     /// Panics if `IDX` is 0 or if `IDX > N`.
     ///
     /// [`next`]: Iterator::next
-    /// [`std::iter::Peekable::peek_mut`]: std::iter::Peekable::peek_mut
+    /// [`core::iter::Peekable::peek_mut`]: core::iter::Peekable::peek_mut
     pub fn peek_mut<const IDX: usize>(&mut self) -> Option<&mut <I as Iterator>::Item> {
         assert_ne!(IDX, 0);
         assert!(
@@ -155,7 +155,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     ///
     /// ```compile_fail
     /// # use peekaboo::*;
-    /// let mut iter = std::iter::empty::<u32>().peekable_n::<4>();
+    /// let mut iter = core::iter::empty::<u32>().peekable_n::<4>();
     /// let peek1 = iter.peek::<1>();
     /// let peek2 = iter.peek::<2>();
     /// # assert_eq!(peek1, peek2);
@@ -165,7 +165,7 @@ impl<I: Iterator, const N: usize> Peekable<I, N> {
     ///
     /// ```
     /// # use peekaboo::*;
-    /// let mut iter = std::iter::empty::<()>().peekable_n::<4>();
+    /// let mut iter = core::iter::empty::<()>().peekable_n::<4>();
     /// let [peek1, peek2] = iter.peek_multiple::<2>();
     /// # assert_eq!(peek1, peek2);
     /// ```
@@ -406,7 +406,7 @@ impl<I: FusedIterator, const N: usize> FusedIterator for Peekable<I, N> {}
 /// Trait extension that provides [`peekable_n`] for [`Iterator`]s
 ///
 /// [`peekable_n`]: IteratorExt::peekable_n
-/// [`Iterator`]: std::iter::Iterator
+/// [`Iterator`]: core::iter::Iterator
 pub trait IteratorExt {
     /// Creates an iterator that allows to peek the next `N` elements.
     ///
